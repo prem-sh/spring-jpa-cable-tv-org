@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,11 +19,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.premsh.jpaexperiment.data.channelbase.repository.PackageRepository;
+import com.premsh.jpaexperiment.data.userbase.models.Customer;
 import com.premsh.jpaexperiment.data.userbase.models.Subscription;
 import com.premsh.jpaexperiment.data.userbase.models.SubscriptionStatus;
+import com.premsh.jpaexperiment.data.userbase.repository.CustomerRepository;
 import com.premsh.jpaexperiment.data.userbase.repository.SubscriptionRepository;
 import com.premsh.jpaexperiment.data.userbase.repository.SubscriptionStatusRepository;
-import com.premsh.jpaexperiment.dto.CreateSubscriptionDto;
+import com.premsh.jpaexperiment.dto.SubscriptionInputDto;
 
 @RestController
 @RequestMapping("/subscription")
@@ -29,6 +33,9 @@ public class SubscriptionController {
 	@Autowired SubscriptionRepository subscriptionRepository;
 	@Autowired SubscriptionStatusRepository subscriptionStatusRepository;
 	@Autowired PackageRepository packageRepository;
+	@Autowired CustomerRepository customerRepository;
+	
+	Logger logger = LoggerFactory.getLogger(SubscriptionController.class);
 	
 	@GetMapping("/status/all")
 	public ResponseEntity<List<SubscriptionStatus>> getAllStatus(){
@@ -36,13 +43,14 @@ public class SubscriptionController {
 	}
 	
 	@PostMapping
-	public ResponseEntity<Subscription> create(@RequestBody CreateSubscriptionDto createSubscription){
+	public ResponseEntity<Subscription> create(@RequestBody SubscriptionInputDto createSubscription){
 		Subscription subscription = new Subscription();
-		
-		subscription.setPriceDouble(createSubscription.getPrice());
-		subscription.setPackageId(
-				
-				);
+		subscription.setPrice(createSubscription.getPrice());
+		subscription.setPackageId(createSubscription.getPackageId());
+		subscription.setValidity(createSubscription.getValidity());
+		subscription.setStatus(subscriptionStatusRepository.findById(createSubscription.getStatus()).orElseThrow(()->new EntityNotFoundException("No such Subscription status Exist")));
+		subscription.setCustomer(customerRepository.findById(createSubscription.getCustomerId()).orElseThrow(()->new EntityNotFoundException("Customer not found")));
+		System.err.println(customerRepository.findById(createSubscription.getCustomerId()).orElseThrow(()->new EntityNotFoundException("Customer not found")));
 		return new ResponseEntity<Subscription>(subscriptionRepository.save(subscription), HttpStatus.CREATED);
 	}
 	

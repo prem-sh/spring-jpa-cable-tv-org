@@ -47,6 +47,8 @@ public class UserBaseDatasourceConfiguration {
 		Map<String, String> userJpaProperties = new HashMap<>();
 		userJpaProperties.put("hibernate.dialect", "org.hibernate.dialect.MySQL8Dialect");
 		userJpaProperties.put("hibernate.hbm2ddl.auto", "update");
+		userJpaProperties.put("hibernate.event.merge.entity_copy_observer", "allow");
+
 
 		return userEntityManagerFactoryBuilder.dataSource(userDataSource)
 				.packages("com.premsh.jpaexperiment.data.userbase.models")

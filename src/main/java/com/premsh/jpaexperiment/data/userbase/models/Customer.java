@@ -80,5 +80,20 @@ public class Customer {
 		this.isActive = isActive;
 	}
 
+	@Override
+	public String toString() {
+		return customerId+" : "+userName;
+	}
+
+	@Override
+	public int hashCode() {
+		return customerId;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		return this.customerId.equals(((Customer)obj).getCustomerId());
+	}
+
 	
 }

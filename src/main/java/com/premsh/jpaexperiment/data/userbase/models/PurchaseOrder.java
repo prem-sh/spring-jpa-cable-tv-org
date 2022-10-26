@@ -5,6 +5,7 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -28,7 +29,7 @@ public class PurchaseOrder {
 	private Customer customer;
 	
 
-	@ManyToMany(cascade = CascadeType.ALL)
+	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinTable(
 			name = "subscription_po",
 			joinColumns = @JoinColumn(name = "sub_id"),
@@ -43,7 +44,7 @@ public class PurchaseOrder {
 	private Double tax;
 
 	@Column(name = "grand_total")
-	private Double grand_total;
+	private Double grandTotal;
 	
 	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "status", referencedColumnName = "po_status_id")
@@ -90,11 +91,11 @@ public class PurchaseOrder {
 	}
 
 	public Double getGrand_total() {
-		return grand_total;
+		return grandTotal;
 	}
 
 	public void setGrand_total(Double grand_total) {
-		this.grand_total = grand_total;
+		this.grandTotal = grand_total;
 	}
 
 	public PurchaseOrderStatus getStatus() {

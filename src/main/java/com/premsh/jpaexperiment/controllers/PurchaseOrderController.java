@@ -1,5 +1,6 @@
 package com.premsh.jpaexperiment.controllers;
 
+import java.util.HashSet;
 import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
@@ -16,16 +17,22 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.premsh.jpaexperiment.data.channelbase.models.Channel;
-import com.premsh.jpaexperiment.data.channelbase.repository.ChannelRepository;
+import com.premsh.jpaexperiment.data.userbase.models.PurchaseOrder;
 import com.premsh.jpaexperiment.data.userbase.models.PurchaseOrderStatus;
+import com.premsh.jpaexperiment.data.userbase.models.Subscription;
+import com.premsh.jpaexperiment.data.userbase.repository.CustomerRepository;
 import com.premsh.jpaexperiment.data.userbase.repository.PurchaseOrderStatusRepository;
+import com.premsh.jpaexperiment.data.userbase.repository.PurchaseOrdersRepository;
+import com.premsh.jpaexperiment.data.userbase.repository.SubscriptionRepository;
+import com.premsh.jpaexperiment.dto.PurchaseOrderInputDto;
 
 @RestController
 @RequestMapping("/purchase-order")
 public class PurchaseOrderController {
-	@Autowired ChannelRepository channelRepository;
+	@Autowired PurchaseOrdersRepository purchaseOrdersRepository;
 	@Autowired PurchaseOrderStatusRepository purchaseOrderStatusRepository;
+	@Autowired CustomerRepository customerRepository;
+	@Autowired SubscriptionRepository subscriptionRepository;
 	
 	@GetMapping("/status/all")
 	public ResponseEntity<List<PurchaseOrderStatus>> getAllStatus(){
@@ -33,29 +40,44 @@ public class PurchaseOrderController {
 	}
 	
 	@PostMapping
-	public ResponseEntity<Channel> create(@RequestBody Channel channel){
-		return new ResponseEntity<Channel>(channelRepository.save(channel), HttpStatus.CREATED);
+	public ResponseEntity<PurchaseOrder> create(@RequestBody PurchaseOrderInputDto purchaseOrderDto){
+		PurchaseOrder purchaseOrder = new PurchaseOrder();
+		purchaseOrder.setPrice(purchaseOrderDto.getPrice());
+		purchaseOrder.setTax(purchaseOrderDto.getTax());
+		purchaseOrder.setGrand_total(purchaseOrderDto.getGrandTotal());
+		purchaseOrder.setCustomer(customerRepository.findById(purchaseOrderDto.getCustomerId()).orElseThrow(()->new EntityNotFoundException("Customer not found")));
+		purchaseOrder.setStatus(purchaseOrderStatusRepository.findById(purchaseOrderDto.getStatus()).orElseThrow(()->new EntityNotFoundException("PO status not found")));
+		purchaseOrder.setSubscriptions(new HashSet<Subscription>(subscriptionRepository.findAllById(purchaseOrderDto.getSubscriptions())));
+		
+		return new ResponseEntity<PurchaseOrder>(purchaseOrdersRepository.save(purchaseOrder), HttpStatus.CREATED);
 	}
 	
 	@PutMapping("/{id}")
-	public ResponseEntity<Channel> delete(@RequestBody Channel channel, @PathVariable("id") Integer id){
-		channel.setChannelId(id);
-		return new ResponseEntity<Channel>(channelRepository.save(channel), HttpStatus.OK);
+	public ResponseEntity<PurchaseOrder> delete(@RequestBody PurchaseOrderInputDto purchaseOrderDto, @PathVariable("id") Integer id){
+		PurchaseOrder purchaseOrder = new PurchaseOrder();
+		purchaseOrder.setPurchaseOrderId(id);
+		purchaseOrder.setPrice(purchaseOrderDto.getPrice());
+		purchaseOrder.setTax(purchaseOrderDto.getTax());
+		purchaseOrder.setGrand_total(purchaseOrderDto.getGrandTotal());
+		purchaseOrder.setCustomer(customerRepository.findById(purchaseOrderDto.getCustomerId()).orElseThrow(()->new EntityNotFoundException("Customer not found")));
+		purchaseOrder.setStatus(purchaseOrderStatusRepository.findById(purchaseOrderDto.getStatus()).orElseThrow(()->new EntityNotFoundException("PO status not found")));
+		purchaseOrder.setSubscriptions(new HashSet<Subscription>(subscriptionRepository.findAllById(purchaseOrderDto.getSubscriptions())));
+		return new ResponseEntity<PurchaseOrder>(purchaseOrdersRepository.save(purchaseOrder), HttpStatus.OK);
 	}
 	
 	@DeleteMapping("/{id}")
 	public ResponseEntity<String> delete(@PathVariable("id") Integer id){
-		channelRepository.deleteById(id);
+		purchaseOrdersRepository.deleteById(id);
 		return new ResponseEntity<String>("deleted", HttpStatus.OK);
 	}
 	
 	@GetMapping("/all")
-	public ResponseEntity<List<Channel>> getAll(){
-		return new ResponseEntity<List<Channel>>(channelRepository.findAll(), HttpStatus.OK);
+	public ResponseEntity<List<PurchaseOrder>> getAll(){
+		return new ResponseEntity<List<PurchaseOrder>>(purchaseOrdersRepository.findAll(), HttpStatus.OK);
 	}
 	
 	@GetMapping("/{id}")
-	public ResponseEntity<Channel> getById(@PathVariable("id") Integer id ){
-		return new ResponseEntity<Channel>(channelRepository.findById(id).orElseThrow(()->new EntityNotFoundException("Channel not found")), HttpStatus.OK);
+	public ResponseEntity<PurchaseOrder> getById(@PathVariable("id") Integer id ){
+		return new ResponseEntity<PurchaseOrder>(purchaseOrdersRepository.findById(id).orElseThrow(()->new EntityNotFoundException("PO not found")), HttpStatus.OK);
 	}
 }

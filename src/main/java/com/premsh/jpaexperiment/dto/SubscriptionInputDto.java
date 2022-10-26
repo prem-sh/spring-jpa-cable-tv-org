@@ -1,12 +1,17 @@
 package com.premsh.jpaexperiment.dto;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class CreateSubscriptionDto {
+public class SubscriptionInputDto {
 	private Integer packageId;
-	private Date validity;
+	private String validity;
 	private Double price;
 	private Integer status;
+	private Integer customerId;
+	
+	
 	public Integer getPackageId() {
 		return packageId;
 	}
@@ -14,9 +19,14 @@ public class CreateSubscriptionDto {
 		this.packageId = packageId;
 	}
 	public Date getValidity() {
-		return validity;
+		try {
+			return new SimpleDateFormat("yyyy-MM-dd").parse(validity);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
-	public void setValidity(Date validity) {
+	public void setValidity(String validity) {
 		this.validity = validity;
 	}
 	public Double getPrice() {
@@ -30,6 +40,12 @@ public class CreateSubscriptionDto {
 	}
 	public void setStatus(Integer status) {
 		this.status = status;
+	}
+	public Integer getCustomerId() {
+		return customerId;
+	}
+	public void setCustomerId(Integer customerId) {
+		this.customerId = customerId;
 	}
 	
 	

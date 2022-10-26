@@ -1,6 +1,6 @@
 package com.premsh.jpaexperiment.data.userbase.models;
 
-import java.sql.Date;
+import java.util.Date;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -26,7 +26,7 @@ public class Subscription {
 	private Integer packageId;
 	
 
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne(cascade = CascadeType.MERGE)
 	@JoinColumn(name = "customer_id", referencedColumnName = "customer_id")
 	private Customer customer;
 	
@@ -35,9 +35,9 @@ public class Subscription {
 	private Date validity;
 	
 	@Column(name = "price")
-	private Double priceDouble;
+	private Double price;
 	
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne(cascade = CascadeType.MERGE)
 	@JoinColumn(name = "status", referencedColumnName = "subscription_status_id")
 	private SubscriptionStatus status;
 	
@@ -66,12 +66,12 @@ public class Subscription {
 		this.validity = validity;
 	}
 
-	public Double getPriceDouble() {
-		return priceDouble;
+	public Double getPrice() {
+		return price;
 	}
 
-	public void setPriceDouble(Double priceDouble) {
-		this.priceDouble = priceDouble;
+	public void setPrice(Double price) {
+		this.price = price;
 	}
 
 	public SubscriptionStatus getStatus() {

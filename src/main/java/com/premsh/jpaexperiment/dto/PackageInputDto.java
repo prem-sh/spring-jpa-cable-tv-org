@@ -1,7 +1,7 @@
 package com.premsh.jpaexperiment.dto;
 import java.util.List;
 
-public class CreatePackageDto {
+public class PackageInputDto {
 	private String packageName;
 	private String description;
 	private List<Integer> channels;

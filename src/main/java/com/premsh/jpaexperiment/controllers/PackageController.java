@@ -1,7 +1,6 @@
 package com.premsh.jpaexperiment.controllers;
 
 import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityNotFoundException;
@@ -21,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.premsh.jpaexperiment.data.channelbase.models.Package;
 import com.premsh.jpaexperiment.data.channelbase.repository.ChannelRepository;
 import com.premsh.jpaexperiment.data.channelbase.repository.PackageRepository;
-import com.premsh.jpaexperiment.dto.CreatePackageDto;
+import com.premsh.jpaexperiment.dto.PackageInputDto;
 
 @RestController
 @RequestMapping("/package")
@@ -31,7 +30,7 @@ public class PackageController {
 @Autowired ChannelRepository channelRepository;
 	
 	@PostMapping
-	public ResponseEntity<Package> create(@RequestBody CreatePackageDto createPackageDto){
+	public ResponseEntity<Package> create(@RequestBody PackageInputDto createPackageDto){
 		Package subscriptionPackage = new Package();
 		subscriptionPackage.setPackageName(createPackageDto.getPackageName());
 		subscriptionPackage.setDescription(createPackageDto.getDescription());
@@ -47,7 +46,7 @@ public class PackageController {
 	}
 	
 	@PutMapping("/{id}")
-	public ResponseEntity<Package> delete(@RequestBody CreatePackageDto createPackageDto, @PathVariable("id") Integer id){
+	public ResponseEntity<Package> delete(@RequestBody PackageInputDto createPackageDto, @PathVariable("id") Integer id){
 		Package subscriptionPackage = new Package();
 		subscriptionPackage.setPackageName(createPackageDto.getPackageName());
 		subscriptionPackage.setDescription(createPackageDto.getDescription());
